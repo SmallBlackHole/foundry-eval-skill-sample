@@ -4,3 +4,5 @@ results/
 .env
 scripts/
 __pycache__/
+.pytest_cache/
+test-results/

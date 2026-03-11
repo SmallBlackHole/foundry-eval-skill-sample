@@ -3,3 +3,4 @@
 results/
 .env
 scripts/
+__pycache__/

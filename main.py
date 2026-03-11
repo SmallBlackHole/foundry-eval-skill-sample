@@ -12,19 +12,11 @@ import statistics
 from typing import Annotated
 
 from dotenv import load_dotenv
-
-load_dotenv(override=False)
-
 from agent_framework.azure import AzureAIAgentClient
 from azure.ai.agentserver.agentframework import from_agent_framework
 from azure.identity.aio import DefaultAzureCredential
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
-
-# Configure these for your Foundry project
-PROJECT_ENDPOINT = os.getenv("PROJECT_ENDPOINT")  # e.g., "https://<project>.services.ai.azure.com"
-MODEL_DEPLOYMENT_NAME = os.getenv("MODEL_DEPLOYMENT_NAME", "gpt-4.1-mini")
 
 
 # ---------------------------------------------------------------------------
@@ -142,22 +134,19 @@ def convert_base(
 
 
 # ---------------------------------------------------------------------------
-# Agent entry point
+# Math tools list (for reuse)
 # ---------------------------------------------------------------------------
 
-async def main():
-    """Main function to run the agent as a web server."""
-    async with (
-        DefaultAzureCredential() as credential,
-        AzureAIAgentClient(
-            project_endpoint=PROJECT_ENDPOINT,
-            model_deployment_name=MODEL_DEPLOYMENT_NAME,
-            credential=credential,
-        ) as client,
-    ):
-        agent = client.create_agent(
-            name="math-solver",
-            instructions="""You are a helpful math solver agent. You can solve a wide range of common math problems.
+MATH_TOOLS = [
+    solve_quadratic,
+    basic_arithmetic,
+    compute_statistics,
+    compute_factorial,
+    compute_gcd_lcm,
+    convert_base,
+]
+
+AGENT_INSTRUCTIONS = """You are a helpful math solver agent. You can solve a wide range of common math problems.
 
 Your capabilities include:
 1. **Basic Arithmetic** — Evaluate arithmetic expressions (addition, subtraction, multiplication, division, exponents).
@@ -176,20 +165,79 @@ When a user presents a math problem:
 - If the problem is ambiguous, ask for clarification.
 - For problems outside your tool capabilities, reason step by step using your own knowledge.
 
-Be concise, accurate, and educational in your responses.""",
-            tools=[
-                solve_quadratic,
-                basic_arithmetic,
-                compute_statistics,
-                compute_factorial,
-                compute_gcd_lcm,
-                convert_base,
-            ],
-        )
+Be concise, accurate, and educational in your responses."""
 
+
+# ---------------------------------------------------------------------------
+# Agent factory (importable from other modules)
+# ---------------------------------------------------------------------------
+
+def create_agent(
+    *,
+    project_endpoint: str | None = None,
+    model_deployment_name: str | None = None,
+):
+    """Create and return the math-solver agent along with its async resources.
+
+    When called without arguments the function reads configuration from
+    environment variables (``PROJECT_ENDPOINT`` and ``MODEL_DEPLOYMENT_NAME``).
+    ``load_dotenv`` is called automatically so a ``.env`` file is picked up.
+
+    Returns:
+        A tuple of ``(agent, credential, client)`` so the caller can manage
+        the async context lifetime.  Use the returned objects inside an
+        ``async with`` block or call ``await credential.close()`` /
+        ``await client.close()`` when done.
+
+    Example usage from another file::
+
+        from main import create_agent
+
+        agent, credential, client = await create_agent()
+        # ... use agent ...
+        await client.close()
+        await credential.close()
+    """
+    load_dotenv(override=False)
+
+    project_endpoint = project_endpoint or os.getenv("PROJECT_ENDPOINT")
+    model_deployment_name = model_deployment_name or os.getenv(
+        "MODEL_DEPLOYMENT_NAME", "gpt-4.1-mini"
+    )
+
+    credential = DefaultAzureCredential()
+    client = AzureAIAgentClient(
+        project_endpoint=project_endpoint,
+        model_deployment_name=model_deployment_name,
+        credential=credential,
+    )
+
+    agent = client.create_agent(
+        name="math-solver",
+        instructions=AGENT_INSTRUCTIONS,
+        tools=MATH_TOOLS,
+    )
+
+    return agent, credential, client
+
+
+# ---------------------------------------------------------------------------
+# Agent entry point
+# ---------------------------------------------------------------------------
+
+async def main():
+    """Main function to run the agent as a web server."""
+    logging.basicConfig(level=logging.INFO)
+
+    agent, credential, client = create_agent()
+
+    try:
         logger.info("Math Solver Agent Server running on http://localhost:8088")
         server = from_agent_framework(agent)
         await server.run_async()
+    finally:
+        await client.close()
+        await credential.close()
 
 
 if __name__ == "__main__":

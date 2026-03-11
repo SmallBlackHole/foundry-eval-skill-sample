@@ -1,8 +1,0 @@
-{
-  "python.testing.pytestEnabled": true,
-  "python.testing.pytestArgs": [
-    "evaluators",
-    "-v",
-    "--cache-mode=session"
-  ]
-}

@@ -1,0 +1,15 @@
+{"query": "What is 25 * 4 + 10?"}
+{"query": "Solve the quadratic equation 2x^2 + 3x - 5 = 0"}
+{"query": "Compute the factorial of 10"}
+{"query": "What is the GCD and LCM of 48 and 18?"}
+{"query": "Convert the decimal number 255 to hexadecimal"}
+{"query": "Calculate the mean, median, and standard deviation of [12, 15, 20, 22, 30, 35, 40]"}
+{"query": "Solve x^2 - 4x + 4 = 0"}
+{"query": "What is 2^10 - 512?"}
+{"query": "Convert 0xFF to binary"}
+{"query": "What is the factorial of 0?"}
+{"query": "Find the GCD and LCM of 7 and 13"}
+{"query": "Evaluate the expression (100 / 4) + (3 * 7) - 2"}
+{"query": "Solve 3x^2 + 2x + 5 = 0"}
+{"query": "Compute statistics for the numbers 5, 5, 5, 10, 10, 15"}
+{"query": "Convert 0b11010 to decimal"}

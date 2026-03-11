@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=
+name: explanation_correctness
+category: quality
+scoring_type: continuous
+min_score: 0
+max_score: 1
+pass_threshold: 0.6
+description: "Checks that the agent shows its work by including tool output and step-by-step explanation in the response"
+code_path: evaluators/explanation_correctness.py

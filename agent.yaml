@@ -1,0 +1,29 @@
+# Unique identifier/name for this agent
+name: math-solver
+# Brief description of what this agent does
+description: >
+  A math solver agent that solves common math problems including arithmetic,
+  quadratic equations, statistics, factorials, GCD/LCM, and base conversions.
+  Demonstrates local Python tool execution with Microsoft Agent Framework.
+metadata:
+  authors:
+    - Microsoft
+  tags:
+    - Azure AI AgentServer
+    - Microsoft Agent Framework
+    - Local Tools
+    - Math Solver
+template:
+  name: math-solver
+  kind: hosted
+  protocols:
+    - protocol: responses
+  environment_variables:
+    - name: PROJECT_ENDPOINT
+      value: ${AZURE_AI_PROJECT_ENDPOINT}
+    - name: MODEL_DEPLOYMENT_NAME
+      value: "{{chat}}"
+resources:
+  - kind: model
+    id: gpt-4.1-mini
+    name: chat

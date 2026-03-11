@@ -1,0 +1,5 @@
+.venv/
+.foundry/
+results/
+.env
+scripts/

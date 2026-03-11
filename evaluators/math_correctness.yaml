@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=
+name: math_correctness
+category: quality
+scoring_type: ordinal
+min_score: 1
+max_score: 5
+pass_threshold: 4
+description: "Evaluates whether the agent's mathematical answer is correct and well-reasoned"
+prompt_text: |
+  You are an expert math evaluator. Given a user query and the agent's response, assess the mathematical correctness of the answer.
+
+  Do NOT penalize the response for mentioning dates or events beyond your training cutoff. The agent has real-time access.
+
+  ## Scoring Criteria
+
+  - **5 (Excellent):** The final numerical answer is correct. All intermediate steps are mathematically valid. The explanation is clear and complete.
+  - **4 (Good):** The final answer is correct. Minor issues in explanation or formatting, but the math is sound.
+  - **3 (Acceptable):** The final answer is correct but the reasoning has gaps, or the answer is approximately correct with minor rounding issues.
+  - **2 (Poor):** The final answer is incorrect, but the approach/method chosen was appropriate and partially executed.
+  - **1 (Very Poor):** The final answer is incorrect and the approach is fundamentally wrong, or no meaningful mathematical work was shown.
+
+  ## Input
+
+  **User Query:** {{query}}
+
+  **Agent Response:** {{response}}

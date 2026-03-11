@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=
+name: math-solver-eval
+description: "Quality evaluation for math-solver agent — checks task adherence, mathematical correctness, and whether the agent shows its work"
+
+agent:
+  name: math-solver
+  version: "latest"
+
+dataset:
+  path: datasets/math-solver-test.jsonl
+  # path: # if empty, will prompt for user input
+
+judge_model:
+  deployment: gpt-4o
+
+evaluators:
+  # Built-in
+  - type: builtin
+    name: task_adherence
+
+  # Custom - all custom evaluators in the folder
+  - type: custom
+    path: evaluators/*.yaml
+
+  # Custom — prompt-based (LLM judge for math correctness)
+  # - type: custom
+  #   path: evaluators/math_correctness.yaml
+
+  # Custom — code-based (checks response includes tool output and explanation)
+  # - type: custom
+  #   path: evaluators/explanation_correctness.yaml
